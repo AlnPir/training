@@ -1,0 +1,1516 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Lower &amp; Upper Program</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: one reading column like a coach's training card; each exercise is a card with a looping figure beside its prescription. */
+:root {
+  --bg: #F2F4F7;
+  --surface: #FFFFFF;
+  --surface-2: #E8ECF2;
+  --ink: #161B25;
+  --muted: #5A6475;
+  --line: #D5DBE4;
+  --accent: #2A56B5;      /* 20 kg plate blue */
+  --accent-soft: #DCE5F7;
+  --muscle: #DF5139;      /* working muscle */
+  --muscle-soft: #FBE4DF;
+  --note: #8A5A00;
+  --note-soft: #FFF2D9;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "Barlow", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141B; --surface: #171C25; --surface-2: #202734; --ink: #E7EBF2; --muted: #99A3B4; --line: #2C3441;
+    --accent: #84A6F3; --accent-soft: #1E2B46; --muscle: #F27B63; --muscle-soft: #3B231E; --note: #F2BE68; --note-soft: #362A12;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141B; --surface: #171C25; --surface-2: #202734; --ink: #E7EBF2; --muted: #99A3B4; --line: #2C3441;
+  --accent: #84A6F3; --accent-soft: #1E2B46; --muscle: #F27B63; --muscle-soft: #3B231E; --note: #F2BE68; --note-soft: #362A12;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  padding-inline: 16px;
+  padding-block: 0 48px;
+}
+.wrap { max-width: 860px; margin-inline: auto; display: flex; flex-direction: column; gap: 40px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; }
+h1 { font-size: clamp(2.6rem, 8vw, 4rem); font-weight: 700; letter-spacing: -0.01em; text-transform: uppercase; }
+h2 { font-size: 1.9rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; }
+h3 { font-size: 1.15rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+p { margin: 0; }
+ul, ol { margin: 0; padding-left: 1.25em; display: flex; flex-direction: column; gap: 6px; }
+a { color: var(--accent); }
+strong { font-weight: 600; }
+.eyebrow { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.95rem; color: var(--accent); }
+.lead { font-size: 1.2rem; max-width: 60ch; color: var(--ink); }
+.muted { color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 16px; scroll-margin-top: 64px; }
+.prose { max-width: 66ch; display: flex; flex-direction: column; gap: 12px; }
+
+/* Header */
+header.top { display: flex; flex-direction: column; gap: 14px; padding-top: 36px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.fact { font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 4px 10px; border: 1.5px solid var(--line); border-radius: 999px; background: var(--surface); font-variant-numeric: tabular-nums; }
+
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Panels */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+.callout { background: var(--note-soft); border-radius: var(--radius); padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.callout .label { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--note); font-size: 0.95rem; }
+
+/* Tables */
+.table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.9rem; color: var(--muted); white-space: nowrap; }
+td.num { font-family: var(--font-display); font-weight: 700; font-size: 1.25rem; color: var(--accent); width: 1%; }
+td.nowrap, .nw { white-space: nowrap; }
+.session-table td:nth-child(2) a { color: var(--ink); font-weight: 600; text-decoration: none; border-bottom: 1.5px solid var(--line); }
+
+/* RIR scale */
+.rir { display: flex; flex-direction: column; gap: 6px; font-variant-numeric: tabular-nums; }
+.rir-head, .rir-row { display: grid; grid-template-columns: minmax(0, 1fr) repeat(5, 2.3rem); gap: 4px; align-items: center; }
+.rir-head span { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; text-align: center; }
+.rir-head .who { text-align: left; font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.rir-row .who { font-size: 0.95rem; min-width: 0; }
+.rir-row i { display: block; height: 22px; border-radius: 4px; background: var(--surface-2); }
+.rir-row i.on { background: var(--accent); }
+.rir-row.learn i.on { background: var(--note); }
+.rir-foot { display: flex; justify-content: flex-end; gap: 14px; font-size: 0.85rem; color: var(--muted); }
+.dodont { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.dodont > div { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.tag { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.95rem; }
+.tag.do { color: var(--accent); }
+.tag.dont { color: var(--muscle); }
+
+/* Warm-up */
+.dose-list { list-style: none; padding: 0; gap: 0; }
+.dose-list li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.dose-list li:last-child { border-bottom: 0; }
+.dose { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+
+/* Exercise cards */
+.ex { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 64px; }
+.ex-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.ex-num { font-family: var(--font-display); font-weight: 700; font-size: 3rem; line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ex-head h2 { font-size: 2.1rem; }
+.ex-head .sub { flex-basis: 100%; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 0.85rem; font-weight: 600; padding: 2px 9px; border-radius: 999px; background: var(--surface-2); color: var(--ink); }
+.chip.main { background: var(--muscle-soft); color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--muscle); }
+.ex-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 720px) { .ex-top { grid-template-columns: minmax(0, 360px) minmax(0, 1fr); } }
+.figure { position: relative; background: var(--surface-2); border-radius: 10px; aspect-ratio: 4 / 3; max-width: 100%; overflow: hidden; }
+.figure svg { display: block; width: 100%; height: 100%; }
+.figure button { position: absolute; right: 8px; top: 8px; font: 600 0.9rem/1 var(--font-display); text-transform: uppercase; letter-spacing: 0.08em;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 9px 12px; cursor: pointer; }
+.figcap { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+.rx { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; margin: 0; align-content: start; }
+.rx div { display: flex; flex-direction: column; gap: 1px; min-width: 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+.rx dt { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; font-size: 0.82rem; color: var(--muted); }
+.rx dd { margin: 0; font-weight: 600; font-variant-numeric: tabular-nums; }
+.rx .wide { grid-column: 1 / -1; }
+.ex-body { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; }
+@media (min-width: 720px) { .ex-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.ex-body > div { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ex-foot { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.prog { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+.prog .tag { color: var(--accent); }
+.rotation-note { font-weight: 600; color: var(--note); }
+
+/* SVG figure styling */
+.figure .floor { stroke: var(--line); stroke-width: 3; fill: none; }
+.figure .bone { stroke: var(--ink); stroke-width: 9; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+.figure .bone.far { stroke: var(--muted); opacity: 0.55; }
+.figure .headc { fill: var(--ink); }
+.figure .eq { fill: var(--surface); stroke: var(--muted); stroke-width: 2; }
+.figure .eq-line { stroke: var(--muted); stroke-width: 4; stroke-linecap: round; fill: none; }
+.figure .eq-thick { stroke: var(--muted); stroke-width: 8; stroke-linecap: round; fill: none; opacity: 0.7; }
+.figure .pad { fill: var(--muted); }
+.figure .plate { fill: var(--accent); opacity: 0.9; }
+.figure .db { fill: var(--accent); }
+.figure .barend { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.figure .muscle { fill: var(--muscle); }
+.figure .muscle-line { stroke: var(--muscle); stroke-width: 7; stroke-linecap: round; fill: none; }
+.figure .phase-label { position: absolute; top: 10px; left: 12px; font-family: var(--font-display); font-weight: 700; font-size: 1rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+footer { color: var(--muted); font-size: 0.9rem; border-top: 1px solid var(--line); padding-top: 16px; }
+@media (max-width: 600px) {
+  .session-table .start { display: none; }
+  .session-table th, .session-table td { padding: 8px 6px; }
+  th { white-space: normal; }
+  td.num { font-size: 1.1rem; }
+}
+@media (max-width: 480px) {
+  body { font-size: 1rem; }
+  header.top { padding-top: 20px; gap: 10px; }
+  .switch button { padding-inline: 8px; }
+  .switch button .n { display: none; }
+  h1 { font-size: 2.2rem; }
+  .lead { font-size: 1.05rem; }
+  .fact { font-size: 0.9rem; padding: 3px 8px; }
+  .ex { padding: 14px; }
+  th, td { padding: 8px 10px; }
+}
+
+/* Day switcher */
+.switch-bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); margin-inline: -16px; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+.switch { max-width: 860px; margin-inline: auto; display: grid; grid-template-columns: 1fr 1fr auto; gap: 4px; padding: 4px; background: var(--surface-2); border-radius: 10px; }
+.switch button { min-height: 44px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); cursor: pointer;
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(0.9rem, 3.8vw, 1.05rem); text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; padding-inline: 12px; }
+.switch button .n { color: var(--accent); margin-right: 5px; }
+.switch button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12); }
+.view { display: flex; flex-direction: column; gap: 24px; }
+.view[hidden] { display: none; }
+.ex, section, details.g { scroll-margin-top: 80px; }
+
+/* Collapsibles */
+details > summary { list-style: none; cursor: pointer; }
+details > summary::-webkit-details-marker { display: none; }
+details.g { border-top: 1px solid var(--line); }
+details.g:last-child { border-bottom: 1px solid var(--line); }
+details.g > summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 16px; }
+details.g > summary h2 { font-size: 1.6rem; }
+.g-body { display: flex; flex-direction: column; gap: 16px; padding-bottom: 24px; }
+details > summary::after { content: ""; flex: none; width: 10px; height: 10px; border-right: 2.5px solid var(--muted); border-bottom: 2.5px solid var(--muted); transform: rotate(45deg); margin: -4px 4px 0 0; transition: transform 0.15s; }
+details[open] > summary::after { transform: rotate(-135deg); margin-top: 4px; }
+details.more > summary, details.warm > summary { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding: 12px 14px; border-radius: 8px; background: var(--surface-2); }
+details.more > summary span:first-child, details.warm > summary span:first-child { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.06em; }
+details > summary .hint { color: var(--muted); font-size: 0.9rem; flex: 1; min-width: 0; }
+details.more[open] > summary { margin-bottom: 16px; }
+details.warm { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 6px; }
+details.warm > summary { background: transparent; }
+details.warm .g-body { padding: 4px 12px 12px; }
+.howto { background: var(--accent-soft); border-radius: 8px; padding: 10px 14px; }
+@media (prefers-reduced-motion: reduce) { details > summary::after { transition: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1>Lower &amp; Upper Program</h1>
+    <p class="lead">Two sessions a week: lower body and upper body.</p>
+    <p class="muted">Leave at least one rest day between them, for example lower body on Monday and upper body on Thursday.</p>
+    <div class="facts">
+      <span class="fact">2× a week</span>
+      <span class="fact">Lower ~60 min</span>
+      <span class="fact">Upper ~45 min</span>
+      <span class="fact">Weeks 1–4: learning phase</span>
+    </div>
+  </header>
+
+  <div class="switch-bar">
+    <div class="switch" role="tablist" aria-label="Program sections">
+      <button type="button" role="tab" id="tab-lower" data-view="lower" aria-controls="view-lower" aria-selected="false"><span class="n">1</span>Lower day</button>
+      <button type="button" role="tab" id="tab-upper" data-view="upper" aria-controls="view-upper" aria-selected="false"><span class="n">2</span>Upper day</button>
+      <button type="button" role="tab" id="tab-guide" data-view="guide" aria-controls="view-guide" aria-selected="true">Guide</button>
+    </div>
+  </div>
+
+  <div class="view" id="view-lower" data-view="lower" role="tabpanel" aria-labelledby="tab-lower" hidden>
+  <section id="lower">
+    <span class="eyebrow">Day 1</span>
+    <h2>Lower body</h2>
+    <p class="muted">About 60 minutes. Do the exercises in this order. The sets are the targets from week 5, the effort from week 6.</p>
+    <div class="table-scroll">
+      <table class="session-table">
+        <thead><tr><th>#</th><th>Exercise</th><th>Sets × reps</th><th>RIR</th><th>Rest</th><th class="start">Start with</th></tr></thead>
+        <tbody>
+          <tr><td class="num">L1</td><td><a href="#l1">Hip thrust</a></td><td><span class="nw">4 × 8–10</span></td><td class="nowrap">1–2</td><td class="nowrap">2:30</td><td class="start">Empty bar (20 kg) on a thick pad</td></tr>
+          <tr><td class="num">L2</td><td><a href="#l2">Bulgarian split squat</a></td><td><span class="nw">3 × 8–10</span> per leg</td><td class="nowrap">2</td><td class="nowrap">90 s/leg</td><td class="start">Body weight, then 2 × 4 kg</td></tr>
+          <tr><td class="num">L3</td><td><a href="#l3">Romanian deadlift (RDL)</a></td><td><span class="nw">3 × 8–10</span></td><td class="nowrap">2</td><td class="nowrap">2:30</td><td class="start">2 dumbbells of 6–8 kg, or the empty bar</td></tr>
+          <tr><td class="num">L4</td><td><a href="#l4">Seated leg curl</a></td><td><span class="nw">3 × 10–12</span></td><td class="nowrap">1</td><td class="nowrap">90 s</td><td class="start">A weight you could lift 15 times</td></tr>
+          <tr><td class="num">L5</td><td><a href="#l5">Abduction machine</a></td><td><span class="nw">3 × 15–20</span></td><td class="nowrap">0–1</td><td class="nowrap">90 s</td><td class="start">A weight you could lift 25 times</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><strong>Rotation:</strong> every 8 weeks, swap the split squat for <a href="#l2b">step-ups</a>, then swap back 8 weeks later.</p>
+      <p><strong>Short on time:</strong> cut the 2:30 rests to 2:00 and do one warm-up round. Keep all five exercises.</p>
+    </div>
+  </section>
+  <details class="warm">
+    <summary><span>Warm-up</span><span class="hint">1–2 rounds, about 5 min</span></summary>
+    <div class="g-body">
+      <ol class="dose-list">
+        <li><span class="dose">90 s</span><span>Jump rope or easy bike</span></li>
+        <li><span class="dose">6</span><span>Scapular pulls on the pulldown machine: arms straight, pull your shoulders down, then let them rise</span></li>
+        <li><span class="dose">6/side</span><span>Dead bugs: on your back, arms and knees up, lower the opposite arm and leg slowly while your lower back stays flat</span></li>
+        <li><span class="dose">8</span><span>Push-ups with your hands on a bench</span></li>
+        <li><span class="dose">10</span><span>Deep body-weight squats, holding a rack if needed</span></li>
+        <li><span class="dose">30 s/side</span><span>Half-kneeling hip-flexor stretch: squeeze the glute of the back leg and tuck the pelvis under</span></li>
+      </ol>
+      <p><strong>Ramp-up before the hip thrust:</strong> empty bar × 10, then about 75&nbsp;% of the working weight × 5. Add a 50&nbsp;% step once the working weight is over 40 kg. Skip all this while the working weight is still the empty bar.</p>
+    </div>
+  </details>
+
+  <article class="ex" id="l1">
+    <div class="ex-head">
+      <span class="ex-num">L1</span><h2>Hip thrust</h2>
+      <p class="sub">The main glute exercise of the session. It loads the glutes hard while sparing the lower back.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="ht"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a hip thrust"></svg></div>
+        <p class="figcap">Red = the main muscle working.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>4 × 8–10</dd></div>
+        <div><dt>Rest</dt><dd>2:30</dd></div>
+        <div><dt>Effort</dt><dd>RIR 1–2</dd></div>
+        <div><dt>Tempo</dt><dd>Up 1 s · squeeze 1 s · down 2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Glutes</span><span class="chip">Hamstrings</span><span class="chip">Quads</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Add 2.5 kg (1.25 kg per side) once you hit 4 × 10. If the last set still had 4 or more reps left, add 5 kg.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Sit on the floor with your upper back against a bench. The edge sits just below your shoulder blades.</li>
+            <li>Roll the bar over your legs into your hip crease, on a thick pad. Full-size plates (bumper plates) make the bar easier to roll.</li>
+            <li>Feet flat, hip-width apart. At the top, your shins should be vertical, with knees straight above the ankles.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Breathe in and brace.</li>
+            <li>Drive through your heels until your body is flat from shoulders to knees.</li>
+            <li>At the top, tuck your pelvis: pull the tailbone under you, the opposite of arching. Ribs down, chin tucked, eyes forward.</li>
+            <li>Hold 1 s and squeeze your glutes hard.</li>
+            <li>Lower until your glutes almost touch the floor.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>Go all the way down on every rep. Never cut the range short to lift more.</li>
+            <li>No arch at the top: the glutes push, not the lower back. Looking up causes an arch.</li>
+            <li>Knees travel far past the toes at the top: your feet are too close. Move them away.</li>
+            <li>You can't fully straighten your hips and feel it all in the hamstrings: your feet are too far. Bring them closer.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with the empty bar on a thick pad, or one dumbbell held on the hips. If you feel it only in your thighs, adjust your feet first (see Watch out). Still no glutes after 2–3 sessions? Do glute bridges (the same movement lying flat on the floor) for 2–4 weeks, then come back. A hip-thrust machine, if the gym has one, is easier to set up.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="l2">
+    <div class="ex-head">
+      <span class="ex-num">L2</span><h2>Bulgarian split squat</h2>
+      <p class="sub">Glutes and thighs, one leg at a time, without loading the spine. Working each leg on its own also shows and evens out left/right differences.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="bss"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a Bulgarian split squat"></svg></div>
+        <p class="figcap">Medium stride, torso slightly forward: glutes and thighs both work.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–10 per leg</dd></div>
+        <div><dt>Rest</dt><dd>90 s after each leg</dd></div>
+        <div><dt>Effort</dt><dd>RIR 2</dd></div>
+        <div><dt>Tempo</dt><dd>Down 2–3 s · up 1 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Glutes</span><span class="chip main">Quads</span><span class="chip">Inner thighs</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Go up to the next dumbbells once you hit 3 × 10 on both legs. If you get fewer than 8 reps with them, go back and add reps up to 12 first.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Put your rear foot on a bench, laces down. Hold the dumbbells at your sides.</li>
+            <li>Take a medium-long stride: at the bottom, your front heel stays down and your front shin leans only slightly forward.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Brace and lean your torso slightly forward, about 15–20°.</li>
+            <li>Lower over 2–3 s until your back knee almost touches the floor.</li>
+            <li>Drive up through your whole front foot, mostly the heel. The back leg only balances; it doesn't push.</li>
+            <li>Do all reps on one leg, rest 90 s, then do the other leg.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>A longer stride with more lean shifts the work to the glutes; a shorter stride with an upright torso shifts it to the thighs. This medium setup trains both.</li>
+            <li>Keep your front knee in line with your toes. Don't let it cave in.</li>
+            <li>Start with your weaker leg, and do the same reps on both legs.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Weeks 1–2: no weights, with one hand on a rack or wall for balance. Still wobbly? Keep the back foot on the floor instead of the bench. Then add 2 × 4 kg dumbbells.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="l2b">
+    <div class="ex-head">
+      <span class="ex-num">L2b</span><h2>Step-up</h2>
+      <p class="sub"><span class="rotation-note">Rotation exercise.</span> It replaces the split squat for 8 weeks at a time, with the same sets, reps and rest.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="su"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a step-up onto a box"></svg></div>
+        <p class="figcap">The bottom leg comes along with its toes up. It doesn't push off.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–10 per leg</dd></div>
+        <div><dt>Rest</dt><dd>90 s after each leg</dd></div>
+        <div><dt>Effort</dt><dd>RIR 2</dd></div>
+        <div><dt>Tempo</dt><dd>Up 1 s · down 2–3 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Glutes</span><span class="chip main">Quads</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Go up to the next dumbbells once you hit 3 × 10 on both legs. If you get fewer than 8 reps with them, go back and add reps up to 12 first.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Use a box or bench about knee height: with your foot on it, your thigh is roughly parallel to the floor.</li>
+            <li>Hold the dumbbells at your sides.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Put your whole foot on the box. Lean slightly forward and brace.</li>
+            <li>Drive through the heel of the top leg until you stand tall. Keep the toes of the bottom leg pulled up so it doesn't push.</li>
+            <li>Lower slowly over 2–3 s and touch the floor lightly.</li>
+            <li>Do all reps on one leg, then switch.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>If you bounce off the bottom foot, the exercise stops working. Go lighter or use a lower box.</li>
+            <li>Keep your knee in line with your toes.</li>
+            <li>A higher box works the glutes more. If your hips shift or your back rounds, use a lower box.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with body weight on a lower box, between mid-shin and knee height.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="l3">
+    <div class="ex-head">
+      <span class="ex-num">L3</span><h2>Romanian deadlift</h2>
+      <p class="sub">Glutes and hamstrings, worked in the stretch. It's the only exercise on the lower day that loads the lower back, so technique matters most.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="rdl"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a Romanian deadlift"></svg></div>
+        <p class="figcap">The hips move back and the bar slides down the legs. The knee angle barely changes.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–10</dd></div>
+        <div><dt>Rest</dt><dd>2:30</dd></div>
+        <div><dt>Effort</dt><dd>RIR 2</dd></div>
+        <div><dt>Tempo</dt><dd>Down 2–3 s · up 1–2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Glutes</span><span class="chip main">Hamstrings</span><span class="chip">Lower back (holds the position)</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Barbell: add 2.5 kg once you hit 3 × 10. Dumbbells: go up to the next pair; if you get fewer than 8 reps with them, go back and add reps up to 12 first.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Stand holding the bar (or two dumbbells) against your thighs, feet hip-width apart.</li>
+            <li>Use an overhand grip (palms facing you), shoulder-width apart.</li>
+            <li>Bend your knees slightly. This small angle stays the same for the whole set.</li>
+            <li>Breathe in, brace, and squeeze your lats (the big back muscles) to keep the bar close.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Push your hips back. Your torso tips forward as a result.</li>
+            <li>The bar (or the dumbbells) slides almost straight down, touching your thighs the whole way.</li>
+            <li>Stop at the biggest hamstring stretch you can reach without rounding your lower back. That's usually around the knee or just below, but the stretch sets the depth, not a distance.</li>
+            <li>Drive your hips forward to stand up. Breathe out at the hardest point.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>This isn't a deadlift from the floor. The bar never touches the floor, and the knees don't bend more at the bottom.</li>
+            <li>If the bar drifts away from your body, it's too heavy or your upper back isn't engaged.</li>
+            <li><strong>Safety check:</strong> at the bottom, your hamstrings and back should be clearly under tension. If you suddenly feel a "release" as you go lower, your back has lost its neutral position. Stop the descent there.</li>
+            <li>If your grip gives out before your hamstrings, use straps.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Learn the movement with a broomstick first. Hold it along your back so it touches the back of your head, your upper back and your tailbone. Push your hips back: if the stick leaves one of those 3 points, your back has rounded. Then start with 2 dumbbells of 6–8 kg or the empty bar.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="l4">
+    <div class="ex-head">
+      <span class="ex-num">L4</span><h2>Seated leg curl</h2>
+      <p class="sub">The only exercise in the program that works the hamstrings by bending the knee. It keeps the back of the legs developing in balance with the glutes.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="lc"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a seated leg curl on a machine"></svg></div>
+        <p class="figcap">The knee sits in line with the machine's pivot point.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 10–12</dd></div>
+        <div><dt>Rest</dt><dd>90 s</dd></div>
+        <div><dt>Effort</dt><dd>RIR 1</dd></div>
+        <div><dt>Tempo</dt><dd>Curl 1 s · squeeze 1 s · back 2–3 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Hamstrings</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Add the smallest step the machine allows once you hit 3 × 12. If you then get fewer than 10 reps, stay at that weight until you're back to 12.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Line your knee up with the machine's pivot, the axis the arm turns around.</li>
+            <li>Set the lower pad just above your heels, and snug the thigh pad down on your thighs.</li>
+            <li>Lean your torso slightly forward and hold the handles.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Curl the pad down and back as far as you can.</li>
+            <li>Squeeze for 1 s.</li>
+            <li>Return over 2–3 s to full extension.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>Keep your hips on the seat.</li>
+            <li>No swinging. If you need momentum, the weight is too heavy.</li>
+            <li>The seated version builds the hamstrings better than the lying one, because they're stretched at the hip.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with a weight you could lift about 15 times. Ask someone at the gym to check the machine setup the first time.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="l5">
+    <div class="ex-head">
+      <span class="ex-num">L5</span><h2>Abduction machine</h2>
+      <p class="sub">Works the upper and side glutes, which the hip thrust works less, with almost no load on the back or pelvic floor.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="ab"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure seen from the front, pushing the knees apart on an abduction machine"></svg></div>
+        <p class="figcap">Front view. The pads sit on the outside of the knees.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 15–20</dd></div>
+        <div><dt>Rest</dt><dd>90 s</dd></div>
+        <div><dt>Effort</dt><dd>RIR 0–1</dd></div>
+        <div><dt>Tempo</dt><dd>Out 1 s · hold 1 s · back 2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Upper &amp; side glutes</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Add the smallest step the machine allows once you hit 3 × 20. If you then get fewer than 15 reps, stay at that weight until you're back to 20.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Sit with the pads against the outside of your knees.</li>
+            <li>Hold the handles.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Push your knees out against the pads.</li>
+            <li>Pause briefly in the open position.</li>
+            <li>Return slowly, under control.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>Don't cheat with your lower back, lean back or swing.</li>
+            <li>Upright or leaning forward both work; leaning forward brings in more of the big glute muscle. Pick one and keep it the same so your log stays comparable.</li>
+            <li>Don't let the weight stack slam down between reps.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with a weight you could lift about 25 times.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  </div>
+
+  <div class="view" id="view-upper" data-view="upper" role="tabpanel" aria-labelledby="tab-upper" hidden>
+  <section id="upper">
+    <span class="eyebrow">Day 2</span>
+    <h2>Upper body</h2>
+    <p class="muted">About 45 minutes. The sets are the targets from week 5, the effort from week 6.</p>
+    <div class="table-scroll">
+      <table class="session-table">
+        <thead><tr><th>#</th><th>Exercise</th><th>Sets × reps</th><th>RIR</th><th>Rest</th><th class="start">Start with</th></tr></thead>
+        <tbody>
+          <tr><td class="num">U1</td><td><a href="#u1">Lat pulldown</a></td><td><span class="nw">3 × 8–12</span></td><td class="nowrap">1–2</td><td class="nowrap">2:00</td><td class="start">A weight you could lift 15 times</td></tr>
+          <tr><td class="num">U2</td><td><a href="#u2">Seated cable row</a></td><td><span class="nw">3 × 10–12</span></td><td class="nowrap">1–2</td><td class="nowrap">2:00</td><td class="start">A weight you could lift 15 times</td></tr>
+          <tr><td class="num">U3</td><td><a href="#u3">Incline dumbbell press</a></td><td><span class="nw">3 × 8–12</span></td><td class="nowrap">2</td><td class="nowrap">2:00</td><td class="start">2 dumbbells of 4–6 kg</td></tr>
+          <tr><td class="num">U4</td><td><a href="#u4">Lateral raise</a></td><td><span class="nw">3 × 12–15</span></td><td class="nowrap">0–1</td><td class="nowrap">90 s</td><td class="start">2 dumbbells of 2–3 kg</td></tr>
+          <tr><td class="num">U5</td><td><a href="#u5">Hanging leg raise</a></td><td><span class="nw">3 × 8–12</span></td><td class="nowrap">—</td><td class="nowrap">60 s</td><td class="start">Knee raises in the captain's chair</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <p><strong>Short on time:</strong> cut the 2:00 rests to 1:30 and do one warm-up round. Keep all five exercises.</p>
+    </div>
+  </section>
+  <details class="warm">
+    <summary><span>Warm-up</span><span class="hint">1–2 rounds, about 5 min</span></summary>
+    <div class="g-body">
+      <ol class="dose-list">
+        <li><span class="dose">90 s</span><span>Jump rope or easy bike</span></li>
+        <li><span class="dose">6</span><span>Scapular pulls on the pulldown machine: arms straight, pull your shoulders down, then let them rise</span></li>
+        <li><span class="dose">6/side</span><span>Dead bugs: on your back, arms and knees up, lower the opposite arm and leg slowly while your lower back stays flat</span></li>
+        <li><span class="dose">8</span><span>Push-ups with your hands on a bench</span></li>
+        <li><span class="dose">10</span><span>Deep body-weight squats, holding a rack if needed</span></li>
+        <li><span class="dose">30 s/side</span><span>Half-kneeling hip-flexor stretch: squeeze the glute of the back leg and tuck the pelvis under</span></li>
+      </ol>
+      <p>You can skip the hip-flexor stretch today.</p>
+      <p><strong>Ramp-up:</strong> one light set of 12 (about 50&nbsp;%) before the pulldown and before the incline press.</p>
+    </div>
+  </details>
+
+  <article class="ex" id="u1">
+    <div class="ex-head">
+      <span class="ex-num">U1</span><h2>Lat pulldown</h2>
+      <p class="sub">Builds the width of the back and pulls the shoulders back. It's also the way to work toward a first pull-up.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="pd"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a lat pulldown"></svg></div>
+        <p class="figcap">Elbows drive down; the bar comes to the top of the chest.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–12</dd></div>
+        <div><dt>Rest</dt><dd>2:00</dd></div>
+        <div><dt>Effort</dt><dd>RIR 1–2</dd></div>
+        <div><dt>Tempo</dt><dd>Pull 1 s · up 2–3 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Lats (back)</span><span class="chip">Biceps</span><span class="chip">Rear shoulders</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Add the smallest step the machine allows once you hit 3 × 12. If you then get fewer than 10 reps, stay at that weight until you're back to 12.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Set the thigh pad so it holds your legs down firmly.</li>
+            <li>Overhand grip, a little wider than your shoulders.</li>
+            <li>Sit tall and lean back slightly, about 10–15°.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Start by pulling your shoulders down, away from your ears.</li>
+            <li>Pull the bar to the top of your chest, driving your elbows down toward your back pockets.</li>
+            <li>Pause briefly with your chest up.</li>
+            <li>Let the bar go back up slowly until your arms are straight and you feel a stretch under your armpits.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>No swinging, and don't lean far back to move the weight.</li>
+            <li>Never pull the bar behind your neck.</li>
+            <li>Your shoulders don't shrug up at the bottom of the pull.</li>
+            <li>Get the full stretch at the top on every rep.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with a weight you could lift about 15 times. If you want to learn pull-ups later, the assisted pull-up machine can replace this exercise.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="u2">
+    <div class="ex-head">
+      <span class="ex-num">U2</span><h2>Seated cable row</h2>
+      <p class="sub">Works the middle of the back, between the shoulder blades. It balances the press and helps posture.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="row"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing a seated cable row"></svg></div>
+        <p class="figcap">The torso stays still; only the arms and shoulder blades move.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 10–12</dd></div>
+        <div><dt>Rest</dt><dd>2:00</dd></div>
+        <div><dt>Effort</dt><dd>RIR 1–2</dd></div>
+        <div><dt>Tempo</dt><dd>Pull 1 s · squeeze 1 s · back 2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Mid-back</span><span class="chip">Lats</span><span class="chip">Rear shoulders</span><span class="chip">Biceps</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Add the smallest step the machine allows once you hit 3 × 12. If you then get fewer than 10 reps, stay at that weight until you're back to 12.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Feet on the platform, knees slightly bent.</li>
+            <li>Use the close-grip handle (palms facing each other).</li>
+            <li>Sit tall with your back straight.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Start with your arms straight and let your shoulders reach slightly forward. Your back stays straight.</li>
+            <li>Pull the handle to your lower ribs, elbows close to your body, squeezing your shoulder blades together.</li>
+            <li>Hold for 1 s.</li>
+            <li>Return slowly to the stretch.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>Keep your torso still. Rocking back and forth means the weight is too heavy.</li>
+            <li>Don't shrug your shoulders up.</li>
+            <li>Don't round your lower back at the stretch.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with a weight you could lift about 15 times. A chest-supported row machine is even easier to learn, if the gym has one.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="u3">
+    <div class="ex-head">
+      <span class="ex-num">U3</span><h2>Incline dumbbell press</h2>
+      <p class="sub">Chest, front shoulders and triceps in one exercise. The incline adds a little more upper-chest work and is usually comfortable for the shoulders.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="ip"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure doing an incline dumbbell press"></svg></div>
+        <p class="figcap">Bench at about 30°. The dumbbells go straight up over the shoulders.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–12</dd></div>
+        <div><dt>Rest</dt><dd>2:00</dd></div>
+        <div><dt>Effort</dt><dd>RIR 2</dd></div>
+        <div><dt>Tempo</dt><dd>Down 2 s · up 1 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Chest</span><span class="chip">Front shoulders</span><span class="chip">Triceps</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Go up to the next dumbbells once you hit 3 × 12. If you get fewer than 8 reps with them, go back and add reps up to 15 first.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Set the bench to about 30°, usually the second or third notch.</li>
+            <li>Sit with the dumbbells on your thighs. Lie back and use your knees to help bring them up.</li>
+            <li>Squeeze your shoulder blades back and down. Feet flat on the floor.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Start with the dumbbells over your shoulders, arms straight.</li>
+            <li>Lower them over 2 s to the sides of your chest. Your elbows sit about 45° from your body, not straight out to the sides.</li>
+            <li>Keep your forearms vertical, wrists straight above your elbows.</li>
+            <li>Press back up and breathe out.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>Don't let your elbows flare out to 90°.</li>
+            <li>No bouncing at the bottom.</li>
+            <li>A bench steeper than 45° turns it into a shoulder press.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Start with 2 dumbbells of 4–6 kg. If a shoulder pinches, lower the bench angle and bring the elbows closer to the body.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="u4">
+    <div class="ex-head">
+      <span class="ex-num">U4</span><h2>Lateral raise</h2>
+      <p class="sub">Works the side of the shoulders, which pressing works much less.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="lr"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure seen from the front, raising dumbbells out to the sides"></svg></div>
+        <p class="figcap">Front view. The hands stop at shoulder height.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 12–15</dd></div>
+        <div><dt>Rest</dt><dd>90 s</dd></div>
+        <div><dt>Effort</dt><dd>RIR 0–1</dd></div>
+        <div><dt>Tempo</dt><dd>Up 1 s · down 2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Side shoulders</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Once you hit 3 × 15, go up to the next dumbbells. If that jump is too big, add reps up to 20 first.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Stand with the dumbbells at your sides, elbows slightly bent.</li>
+            <li>Lean very slightly forward.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>Raise your arms out to the sides, leading with the elbows.</li>
+            <li>Stop when your hands reach shoulder height, palms facing the floor.</li>
+            <li>Lower slowly over 2 s.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>No swinging, and no help from the legs.</li>
+            <li>Don't shrug: keep your neck long.</li>
+            <li>Don't go above shoulder height.</li>
+            <li>The weights are light on this exercise. That's normal.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>2–3 kg dumbbells are a normal start. The cable version works too.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  <article class="ex" id="u5">
+    <div class="ex-head">
+      <span class="ex-num">U5</span><h2>Hanging leg raise</h2>
+      <p class="sub">Direct work for the abs, since the lower-body day has none.</p>
+    </div>
+    <div class="ex-top">
+      <div>
+        <div class="figure" data-anim="hlr"><svg viewBox="0 0 320 240" role="img" aria-label="Animated figure hanging from a bar and raising straight legs"></svg></div>
+        <p class="figcap">The pelvis curls up first, then the straight legs come up.</p>
+      </div>
+      <dl class="rx">
+        <div><dt>Sets × reps</dt><dd>3 × 8–12</dd></div>
+        <div><dt>Rest</dt><dd>60 s</dd></div>
+        <div><dt>Effort</dt><dd>Clean reps</dd></div>
+        <div><dt>Tempo</dt><dd>Up 1 s · down 2 s</dd></div>
+        <div class="wide"><dt>Muscles</dt><dd><span class="chips"><span class="chip main">Abs</span><span class="chip">Hip flexors</span></span></dd></div>
+      </dl>
+    </div>
+    <div class="prog"><span class="tag">Progression</span><span>Once you hit 3 × 12 with straight legs, slow the lowering to 3 s.</span></div>
+    <details class="more">
+      <summary><span>How to do it</span><span class="hint">Setup, the rep, mistakes, getting started</span></summary>
+      <div class="ex-body">
+        <div>
+          <h3>Setup</h3>
+          <ul>
+            <li>Hang from the pull-up bar, overhand grip, hands shoulder-width apart.</li>
+            <li>Pull your shoulders slightly down instead of hanging limp. Elbows locked.</li>
+          </ul>
+          <h3>The rep</h3>
+          <ol>
+            <li>First curl your pelvis up: bring your pubic bone toward your ribs.</li>
+            <li>Then lift your straight legs to at least horizontal, breathing out on the way up.</li>
+            <li>Lower under control and stop with your feet slightly in front of you, so you don't swing.</li>
+          </ol>
+        </div>
+        <div>
+          <h3>Watch out</h3>
+          <ul>
+            <li>No swinging, and no help from the arms.</li>
+            <li>If it only burns at the front of the hips, the hip flexors are doing the work. Curling the pelvis up is what brings in the abs.</li>
+          </ul>
+          <div class="callout">
+            <span class="label">Getting started</span>
+            <p>Step 1: bent-knee raises in the captain's chair, the station where you rest on your forearms. Step 2: bent-knee raises hanging from the bar. Step 3: straight legs. Move up a step once you can do 3 × 12.</p>
+          </div>
+        </div>
+      </div>
+    </details>
+  </article>
+  </div>
+
+  <div class="view guide" id="view-guide" data-view="guide" role="tabpanel" aria-labelledby="tab-guide">
+  <details class="g" id="start" open>
+    <summary><h2>Start here: the first 4 weeks</h2></summary>
+    <div class="g-body">
+    <div class="prose">
+      <p class="howto">At the gym, open <strong>Lower day</strong> or <strong>Upper day</strong> above. Each exercise shows its sets and an animation; tap <strong>How to do it</strong> for the technique.</p>
+      <p>The first month is for learning the movements, not for lifting heavy.</p>
+      <ul>
+        <li><strong>Sets:</strong> do 2 sets per exercise (3 for the hip thrust). From week 5, use the full sets in the Lower day and Upper day tabs, but still keep about 3 reps in reserve. From week 6, use the effort targets too.</li>
+        <li><strong>Effort:</strong> stop each set when you could still do about 3 more reps. Start weights are deliberately light: in weeks 1–2, if the last set still had 5 or more reps left, go up a step on the next set.</li>
+        <li><strong>Form comes first:</strong> once a rep looks different from the first one, the set is over.</li>
+        <li><strong>Film yourself once:</strong> in week 1 or 2, film one set of each exercise from the side. Compare it with the cues on each card.</li>
+        <li><strong>Soreness:</strong> stiff, sore muscles for 1–3 days after the first sessions are normal. A sharp pain in a joint is not: stop that exercise.</li>
+        <li><strong>Write down every set</strong> as kg × reps. That's how you know when to add weight.</li>
+      </ul>
+    </div>
+    </div>
+  </details>
+  <details class="g" id="basics">
+    <summary><h2>Two basics</h2></summary>
+    <div class="g-body">
+    <div class="panel">
+      <h3>Effort: reps in reserve (RIR)</h3>
+      <p>RIR is the number of clean reps you could still do when you stop the set. "RIR 2" means you stop with 2 reps left in the tank. The target is for the <strong>last set</strong> of each exercise. Earlier sets feel a bit easier, which is normal.</p>
+      <div class="rir" role="img" aria-label="Target reps in reserve, from 0 (failure) to 4 or more (easy): abduction and lateral raise 0 to 1; leg curl 1; hip thrust, pulldown and row 1 to 2; split squat or step-up, RDL and incline press 2; everything in weeks 1 to 5: 3.">
+        <div class="rir-head"><span class="who">Reps left in reserve</span><span>0</span><span>1</span><span>2</span><span>3</span><span>4+</span></div>
+        <div class="rir-row"><span class="who">Abduction, lateral raise</span><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="rir-row"><span class="who">Leg curl</span><i></i><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="rir-row"><span class="who">Hip thrust, pulldown, row</span><i></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+        <div class="rir-row"><span class="who">Split squat / step-up, RDL, incline press</span><i></i><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="rir-row learn"><span class="who">Everything in weeks 1–5</span><i></i><i></i><i></i><i class="on"></i><i></i></div>
+        <div class="rir-foot"><span>0 = failure</span><span>4+ = easy</span></div>
+      </div>
+      <p class="muted">It's easy to stop too early. If the last reps still move fast, there were more than 3 left.</p>
+    </div>
+    <div class="panel">
+      <h3>Bracing and breathing</h3>
+      <p>For the hip thrust, split squat, step-up and RDL, the abs must be tight to protect the lower back.</p>
+      <div class="dodont">
+        <div>
+          <span class="tag do">Do</span>
+          <ul>
+            <li>Breathe into your belly before lowering.</li>
+            <li>Tighten your abs all around your waist, as if you're about to take a punch. Belly and sides go hard.</li>
+            <li>Hold that tension through the whole rep, with your back neutral.</li>
+            <li>Breathe out through the hardest part of the way up. Keep breathing; don't hold your breath and strain.</li>
+          </ul>
+        </div>
+        <div>
+          <span class="tag dont">Don't</span>
+          <ul>
+            <li>Push your belly out on purpose.</li>
+            <li>Suck your belly in. Both kill the brace.</li>
+          </ul>
+          <p class="muted">Machines and the upper-body day: keep the abs lightly tight and the ribs down, and breathe out on the effort.</p>
+        </div>
+      </div>
+    </div>
+    </div>
+  </details>
+  <details class="g" id="warmup">
+    <summary><h2>Warm-up</h2></summary>
+    <div class="g-body">
+    <div class="panel">
+      <h3>1–2 rounds, both days (about 5 min)</h3>
+      <ol class="dose-list">
+        <li><span class="dose">90 s</span><span>Jump rope or easy bike</span></li>
+        <li><span class="dose">6</span><span>Scapular pulls on the pulldown machine: arms straight, pull your shoulders down, then let them rise</span></li>
+        <li><span class="dose">6/side</span><span>Dead bugs: on your back, arms and knees up, lower the opposite arm and leg slowly while your lower back stays flat</span></li>
+        <li><span class="dose">8</span><span>Push-ups with your hands on a bench</span></li>
+        <li><span class="dose">10</span><span>Deep body-weight squats, holding a rack if needed</span></li>
+        <li><span class="dose">30 s/side</span><span>Half-kneeling hip-flexor stretch: squeeze the glute of the back leg and tuck the pelvis under</span></li>
+      </ol>
+      <p>On the upper day, you can skip the hip-flexor stretch.</p>
+      <p><strong>Lower day, ramp-up sets before the hip thrust:</strong> empty bar × 10, then about 75&nbsp;% of the working weight × 5. Add a 50&nbsp;% step once the working weight is over 40 kg. Skip all this while the working weight is still the empty bar.</p>
+      <p><strong>Upper day:</strong> one light set of 12 (about 50&nbsp;%) before the pulldown and before the incline press.</p>
+    </div>
+    </div>
+  </details>
+  <details class="g" id="progress">
+    <summary><h2>Progression and recovery</h2></summary>
+    <div class="g-body">
+    <div class="panel">
+      <h3>Double progression</h3>
+      <p>First add reps until every set reaches the top of the range. Then add weight and drop back to the bottom of the range. Change one thing at a time: reps or weight, never both.</p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Hip thrust</th><th>Weight</th><th>Reps, sets 1–4</th></tr></thead>
+          <tbody>
+            <tr><td>Week A</td><td>30 kg</td><td>10 · 9 · 8 · 8</td></tr>
+            <tr><td>Week B</td><td>30 kg</td><td>10 · 10 · 9 · 9</td></tr>
+            <tr><td>Week C</td><td>30 kg</td><td>10 · 10 · 10 · 10 → add 2.5 kg</td></tr>
+            <tr><td>Week D</td><td>32.5 kg</td><td>9 · 9 · 8 · 8</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="prose">
+      <ul>
+        <li><strong>Easy week:</strong> same weights, half the sets, and stop 3–4 reps short. Take one when progress stalls for 2 weeks or you feel run down, at most every 8–10 weeks.</li>
+        <li><strong>Tired day?</strong> Do half the session instead of skipping it.</li>
+        <li><strong>Food:</strong> eat at maintenance calories with about 1.6–2 g of protein per kg of body weight. For 60 kg, that's 95–120 g a day.</li>
+      </ul>
+    </div>
+    </div>
+  </details>
+  <details class="g" id="problems">
+    <summary><h2>If something goes wrong</h2></summary>
+    <div class="g-body">
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Problem</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Lower-back pain on the RDL</td><td>Drop back to your starting weight and redo the broomstick check. If the pain lasts more than a few days or runs down the leg, stop RDLs and see a physio.</td></tr>
+          <tr><td>Leaking urine or pelvic pressure on split squats or RDLs</td><td>Lower the weight and increase it more slowly. It's common but not normal. If it persists, see a pelvic-floor physio.</td></tr>
+          <tr><td>Only feeling the hip thrust in the thighs</td><td>Front of the thighs: move your feet a bit further away and push through your heels. Back of the thighs: bring them closer. Still no glutes after 2–3 sessions: do glute bridges for 2–4 weeks, then come back.</td></tr>
+          <tr><td>No glutes felt at all on the split squat</td><td>Some thigh work is expected and wanted. Lengthen your stride a little and lean slightly further forward.</td></tr>
+          <tr><td>Split squat balance is off that day</td><td>Do the leg press instead, feet high and wide on the platform. Go as deep as you can without your pelvis lifting off the seat.</td></tr>
+          <tr><td>Step-up felt mostly in the back leg or calf</td><td>The back leg is pushing off. Keep its toes up, and go lighter or use a lower box.</td></tr>
+          <tr><td>Shoulder pinches on the incline press</td><td>Lower the bench angle, bring the elbows closer to the body, and use lighter dumbbells. If it persists, use the chest press machine instead.</td></tr>
+          <tr><td>Pulldown or row felt mostly in the arms</td><td>Go lighter. Start each rep by moving the shoulder blades, and think of pulling with the elbows, not the hands.</td></tr>
+          <tr><td>Neck and traps tense on lateral raises</td><td>Use lighter dumbbells, keep the shoulders down, and stop at shoulder height.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </details>
+  <details class="g" id="why">
+    <summary><h2>Why these exercises</h2></summary>
+    <div class="g-body">
+    <div class="dodont">
+      <div class="prose">
+        <h3>Lower day</h3>
+        <ul>
+          <li><strong>Hip thrust:</strong> very high glute activation, easy to load and progress, and gentle on the back. In a direct comparison, it grew the glutes about as much as squats.</li>
+          <li><strong>Bulgarian split squat:</strong> glutes and thighs without a bar on the spine, and each leg works on its own.</li>
+          <li><strong>RDL:</strong> glutes and hamstrings in the stretched position. Three sets and the safety check keep the back load in check.</li>
+          <li><strong>Seated leg curl:</strong> trains the hamstrings at the knee, which the RDL can't do. In a direct comparison, the seated version grew the hamstrings more than the lying one.</li>
+          <li><strong>Abduction:</strong> the upper and side glutes, with almost no load on the back or pelvic floor.</li>
+        </ul>
+      </div>
+      <div class="prose">
+        <h3>Upper day</h3>
+        <ul>
+          <li><strong>Lat pulldown:</strong> back width and posture, and the path to a first pull-up.</li>
+          <li><strong>Seated cable row:</strong> the middle of the back. With the pulldown, it gives two pulls for one push.</li>
+          <li><strong>Incline dumbbell press:</strong> chest, shoulders and triceps in one exercise.</li>
+          <li><strong>Lateral raise:</strong> the side of the shoulders, which the press works much less.</li>
+          <li><strong>Hanging leg raise:</strong> the only direct ab work in the program.</li>
+        </ul>
+      </div>
+    </div>
+    </div>
+  </details>
+  </div>
+
+  <footer>The animations are simplified drawings of each movement. Tap Pause to freeze one.</footer>
+</div>
+
+<script>
+(function () {
+  var NS = "http://www.w3.org/2000/svg";
+  var L = { torso: 50, thigh: 44, shin: 42, foot: 14, ua: 29, fa: 27, neck: 14, head: 9.5 };
+  var FLOOR = 222;
+
+  function rad(d) { return d * Math.PI / 180; }
+  function dir(d) { return [Math.cos(rad(d)), Math.sin(rad(d))]; }
+  function add(p, v, s) { if (s === undefined) s = 1; return [p[0] + v[0] * s, p[1] + v[1] * s]; }
+  function sub(a, b) { return [a[0] - b[0], a[1] - b[1]]; }
+  function len(v) { return Math.hypot(v[0], v[1]); }
+  function unit(v) { var l = len(v) || 1; return [v[0] / l, v[1] / l]; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function lerpP(p, q, t) { return [lerp(p[0], q[0], t), lerp(p[1], q[1], t)]; }
+
+  // Two-bone solver: returns [middle joint, reachable end point]
+  function ik(P, Q, l1, l2, side) {
+    var v = sub(Q, P), d = len(v), u = unit(v);
+    d = Math.max(Math.abs(l1 - l2) + 0.01, Math.min(d, l1 + l2 - 0.01));
+    var a = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
+    var h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+    var base = add(P, u, a), perp = [-u[1], u[0]];
+    return [add(base, perp, side * h), add(P, u, d)];
+  }
+  function leg(H, A, footDeg) {
+    var r = ik(H, A, L.thigh, L.shin, -1);
+    return { K: r[0], A: r[1], T: add(r[1], dir(footDeg), L.foot) };
+  }
+  function headOf(S, H) { return add(S, unit(sub(S, H)), L.neck); }
+  // glute mass: behind the hip, between the back of the torso and the back of the thigh
+  function glute(H, S, K) {
+    var t = unit(sub(S, H)), nT = [t[1], -t[0]];
+    var v = unit(sub(K, H)), nL = [-v[1], v[0]];
+    return add(H, unit([nT[0] + nL[0], nT[1] + nL[1]]), 6.5);
+  }
+  function hamstring(H, K) {
+    var v = unit(sub(K, H)), n = [-v[1], v[0]];
+    return [add(add(H, v, 10), n, 5.5), add(add(K, v, -9), n, 5.5)];
+  }
+  var floorLine = ["poly", "floor", [[-60, FLOOR + 1.5], [380, FLOOR + 1.5]]];
+
+  var specs = {
+    ht: {
+      vb: [-31, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Bottom"], [1.0, 0, 1, "Drive up"], [1.0, 1, 1, "Squeeze"], [1.6, 1, 0, "Lower slowly"]],
+      frame: function (u) {
+        var S = [80, 172];
+        var H = add(S, dir(lerp(39, 0, u)), L.torso);
+        var g = leg(H, [174, 214], 8);
+        var plate = add(H, [3, -10]);
+        var arm = ik(S, plate, L.ua, L.fa, 1);
+        var hd = add(headOf(S, H), [0, -8]);
+        return [
+          floorLine,
+          ["rect", "eq", 14, 176, 74, 10, 3],
+          ["poly", "eq-line", [[22, 186], [22, FLOOR]]],
+          ["poly", "eq-line", [[80, 186], [80, FLOOR]]],
+          ["circle", "plate", plate[0], plate[1], 20],
+          ["circle", "muscle", glute(H, S, g.K)[0], glute(H, S, g.K)[1], 9],
+          ["poly", "bone", [H, g.K, g.A, g.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, arm[0], arm[1]]],
+          ["circle", "barend", plate[0], plate[1], 4]
+        ];
+      }
+    },
+    bss: {
+      vb: [0, 20, 272, 204],
+      timeline: [[0.5, 0, 0, "Top"], [2.2, 0, 1, "Lower 2–3 s"], [0.25, 1, 1, "Bottom"], [1.1, 1, 0, "Drive up"]],
+      frame: function (u) {
+        var H = lerpP([184, 136], [166, 178], u);
+        var S = add(H, dir(lerp(-75, -70, u)), L.torso);
+        var f = leg(H, [210, 216], 8);
+        var r = ik(H, [106, 170], L.thigh, L.shin, -1);
+        var rT = add(r[1], [-14, 3]);
+        var E = add(S, [3, 28]), W = add(S, [1, 55]);
+        var hd = headOf(S, H), gl = glute(H, S, f.K);
+        return [
+          floorLine,
+          ["rect", "eq", 40, 176, 76, 10, 3],
+          ["poly", "eq-line", [[48, 186], [48, FLOOR]]],
+          ["poly", "eq-line", [[108, 186], [108, FLOOR]]],
+          ["poly", "bone far", [H, r[0], r[1], rT]],
+          ["circle", "muscle", gl[0], gl[1], 9],
+          ["poly", "bone", [H, f.K, f.A, f.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, E, W]],
+          ["circle", "db", W[0], W[1] + 2, 8]
+        ];
+      }
+    },
+    su: {
+      vb: [49, 19, 272, 204],
+      timeline: [[0.4, 0, 0, "Bottom"], [1.2, 0, 1, "Drive up"], [0.5, 1, 1, "Stand tall"], [2.2, 1, 0, "Lower slowly"]],
+      frame: function (u) {
+        var H = lerpP([146, 140], [184, 94], u);
+        var S = add(H, dir(lerp(-74, -88, u)), L.torso);
+        var lead = leg(H, [186, 176], 8);
+        var rear = leg(H, lerpP([124, 216], [160, 166], u), lerp(8, -30, u));
+        var E = add(S, [3, 28]), W = add(S, [1, 55]);
+        var hd = headOf(S, H), gl = glute(H, S, lead.K);
+        return [
+          floorLine,
+          ["rect", "eq", 168, 182, 84, 40, 3],
+          ["poly", "bone far", [H, rear.K, rear.A, rear.T]],
+          ["circle", "muscle", gl[0], gl[1], 9],
+          ["poly", "bone", [H, lead.K, lead.A, lead.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, E, W]],
+          ["circle", "db", W[0], W[1] + 2, 8]
+        ];
+      }
+    },
+    rdl: {
+      vb: [14, 20, 272, 204],
+      timeline: [[0.5, 0, 0, "Top"], [2.2, 0, 1, "Hips back"], [0.3, 1, 1, "Stretch"], [1.3, 1, 0, "Hips forward"]],
+      frame: function (u) {
+        var H = lerpP([160, 132], [128, 142], u);
+        var S = add(H, dir(lerp(-86, -36, u)), L.torso);
+        var g = leg(H, [164, 216], 8);
+        var ad = dir(lerp(95, 100, u));
+        var E = add(add(S, ad, L.ua), [2, 0]), W = add(S, ad, L.ua + L.fa);
+        var hd = headOf(S, H), gl = glute(H, S, g.K), hm = hamstring(H, g.K);
+        return [
+          floorLine,
+          ["circle", "plate", W[0], W[1], 20],
+          ["circle", "muscle", gl[0], gl[1], 9],
+          ["poly", "muscle-line", hm],
+          ["poly", "bone", [H, g.K, g.A, g.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, E, W]],
+          ["circle", "barend", W[0], W[1], 4]
+        ];
+      }
+    },
+    lc: {
+      vb: [6, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Start"], [1.1, 0, 1, "Curl"], [1.0, 1, 1, "Squeeze"], [2.4, 1, 0, "Return slowly"]],
+      frame: function (u) {
+        var H = [118, 146], K = [162, 146];
+        var S = add(H, dir(-80), L.torso);
+        var th = lerp(8, 112, u);
+        var A = add(K, dir(th), L.shin), T = add(A, dir(th - 90), L.foot);
+        var pad = add(add(K, dir(th), 34), dir(th + 90), 10);
+        var arm = ik(S, [138, 150], L.ua, L.fa, 1);
+        var hd = headOf(S, H), hm = hamstring(H, K);
+        return [
+          floorLine,
+          ["poly", "eq-thick", [[88, 152], [74, 84]]],
+          ["poly", "eq-line", [[120, 160], [120, FLOOR]]],
+          ["rect", "eq", 84, 151, 76, 9, 3],
+          ["poly", "eq-line", [K, pad]],
+          ["poly", "muscle-line", hm],
+          ["poly", "bone", [H, K, A, T]],
+          ["rect", "pad", 136, 128, 30, 9, 4],
+          ["circle", "pad", pad[0], pad[1], 8],
+          ["circle", "barend", K[0], K[1], 3],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, arm[0], arm[1]]],
+          ["circle", "eq", 140, 152, 4]
+        ];
+      }
+    },
+    ab: {
+      vb: [24, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Start"], [1.0, 0, 1, "Push out"], [0.8, 1, 1, "Hold"], [1.8, 1, 0, "Return slowly"]],
+      frame: function (u) {
+        var c = 160, kx = lerp(15, 46, u), fx = lerp(13, 40, u), ky = lerp(170, 166, u);
+        function side(s) {
+          return [
+            ["poly", "bone", [[c + s * 9, 144], [c + s * kx, ky], [c + s * fx, 210]]],
+            ["poly", "bone", [[c + s * fx - 1, 212], [c + s * (fx + 9), 212]]]
+          ];
+        }
+        return [
+          floorLine,
+          ["rect", "eq", 124, 60, 72, 86, 6],
+          ["rect", "eq", 112, 140, 96, 14, 4],
+          ["rect", "pad", c - kx - 19, ky - 15, 9, 30, 4],
+          ["rect", "pad", c + kx + 10, ky - 15, 9, 30, 4],
+          ["circle", "muscle", c - 22, 140, 7.5],
+          ["circle", "muscle", c + 22, 140, 7.5]
+        ].concat(side(-1), side(1), [
+          ["poly", "bone", [[c, 66], [c, 144]]],
+          ["poly", "bone", [[c - 24, 84], [c + 24, 84]]],
+          ["poly", "bone", [[c - 11, 144], [c + 11, 144]]],
+          ["circle", "headc", c, 52, 10.5],
+          ["poly", "bone", [[c - 24, 84], [c - 31, 112], [c - 35, 138]]],
+          ["poly", "bone", [[c + 24, 84], [c + 31, 112], [c + 35, 138]]],
+          ["circle", "eq", c - 37, 141, 4],
+          ["circle", "eq", c + 37, 141, 4]
+        ]);
+      }
+    },
+    pd: {
+      vb: [14, 18, 272, 204],
+      timeline: [[0.4, 0, 0, "Stretch"], [1.0, 0, 1, "Pull"], [0.5, 1, 1, "Squeeze"], [2.0, 1, 0, "Return slowly"]],
+      frame: function (u) {
+        var H = [128, 174], K = [172, 174], A = [172, 216], T = [186, 219];
+        var S = add(H, dir(lerp(-98, -102, u)), L.torso);
+        var W = lerpP([134, 70], [135, 128], u);
+        var arm = [lerpP(lerpP(S, W, 0.52), add(S, [2, 27]), u), W];
+        var tt = unit(sub(S, H)), n = [tt[1], -tt[0]];
+        var lat = [add(add(S, tt, -12), n, 5.5), add(add(H, tt, 16), n, 5.5)];
+        var hd = headOf(S, H);
+        return [
+          floorLine,
+          ["poly", "eq-line", [[135, 26], W]],
+          ["circle", "eq", 135, 26, 6],
+          ["poly", "eq-line", [[128, 187], [128, FLOOR]]],
+          ["rect", "eq", 96, 178, 80, 9, 3],
+          ["rect", "pad", 152, 160, 26, 8, 4],
+          ["poly", "muscle-line", lat],
+          ["poly", "bone", [H, K, A, T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, arm[0], arm[1]]],
+          ["circle", "barend", arm[1][0], arm[1][1], 4]
+        ];
+      }
+    },
+    row: {
+      vb: [5, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Stretch"], [1.0, 0, 1, "Pull"], [1.0, 1, 1, "Squeeze"], [2.0, 1, 0, "Return slowly"]],
+      frame: function (u) {
+        var H = [110, 188];
+        var S = add(H, dir(lerp(-85, -90, u)), L.torso);
+        var W = lerpP([170, 150], [128, 166], u);
+        var arm = ik(S, W, L.ua, L.fa, 1);
+        var lg = leg(H, [194, 204], -78);
+        var tt = unit(sub(S, H)), n = [tt[1], -tt[0]];
+        var back = [add(add(S, tt, -6), n, 5.5), add(add(S, tt, -26), n, 5.5)];
+        var hd = headOf(S, H);
+        return [
+          floorLine,
+          ["poly", "eq-thick", [[224, 60], [224, FLOOR]]],
+          ["poly", "eq-line", [W, [216, 166]]],
+          ["circle", "eq", 216, 166, 6],
+          ["rect", "eq", 200, 176, 7, 36, 2],
+          ["rect", "eq", 56, 192, 120, 9, 3],
+          ["poly", "eq-line", [[90, 201], [90, FLOOR]]],
+          ["poly", "muscle-line", back],
+          ["poly", "bone", [H, lg.K, lg.A, lg.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, arm[0], arm[1]]],
+          ["circle", "barend", arm[1][0], arm[1][1], 4]
+        ];
+      }
+    },
+    ip: {
+      vb: [32, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Top"], [2.0, 0, 1, "Lower 2 s"], [0.2, 1, 1, "Bottom"], [1.0, 1, 0, "Press up"]],
+      frame: function (u) {
+        var H = [176, 176];
+        var S = add(H, dir(-150), L.torso);
+        var tt = unit(sub(S, H)), front = [-tt[1], tt[0]];
+        var lg = leg(H, [230, 216], 8);
+        var W = lerpP(add(S, [3, -55]), add(S, [14, -2]), u);
+        var arm = ik(S, W, L.ua, L.fa, 1);
+        var chest = add(add(S, tt, -13), front, 6);
+        var p1 = add(H, front, -9), p2 = add(add(S, tt, 22), front, -9);
+        var hd = headOf(S, H);
+        return [
+          floorLine,
+          ["poly", "eq-line", [[112, 154], [112, FLOOR]]],
+          ["poly", "eq-line", [[196, 186], [196, FLOOR]]],
+          ["poly", "eq-thick", [p1, p2]],
+          ["poly", "eq-thick", [p1, [208, 184]]],
+          ["circle", "muscle", chest[0], chest[1], 8.5],
+          ["poly", "bone", [H, lg.K, lg.A, lg.T]],
+          ["poly", "bone", [H, S]],
+          ["circle", "headc", hd[0], hd[1], L.head],
+          ["poly", "bone", [S, arm[0], arm[1]]],
+          ["circle", "db", arm[1][0], arm[1][1], 8]
+        ];
+      }
+    },
+    lr: {
+      vb: [24, 20, 272, 204],
+      timeline: [[0.4, 0, 0, "Start"], [1.0, 0, 1, "Raise"], [0.3, 1, 1, "Top"], [2.0, 1, 0, "Lower slowly"]],
+      frame: function (u) {
+        var c = 160, a = lerp(78, 2, u);
+        function arm(s) {
+          var Sh = [c + s * 26, 84];
+          var E = add(Sh, [s * Math.cos(rad(a)), Math.sin(rad(a))], L.ua);
+          var W = add(E, [s * Math.cos(rad(a + 10)), Math.sin(rad(a + 10))], L.fa);
+          return [Sh, E, W];
+        }
+        var r = arm(1), l = arm(-1);
+        return [
+          floorLine,
+          ["circle", "muscle", c - 28, 84, 8.5],
+          ["circle", "muscle", c + 28, 84, 8.5],
+          ["poly", "bone", [[c - 11, 144], [c - 13, 182], [c - 14, 216]]],
+          ["poly", "bone", [[c + 11, 144], [c + 13, 182], [c + 14, 216]]],
+          ["poly", "bone", [[c - 14, 218], [c - 24, 218]]],
+          ["poly", "bone", [[c + 14, 218], [c + 24, 218]]],
+          ["poly", "bone", [[c, 66], [c, 144]]],
+          ["poly", "bone", [[c - 26, 84], [c + 26, 84]]],
+          ["poly", "bone", [[c - 11, 144], [c + 11, 144]]],
+          ["circle", "headc", c, 52, 10.5],
+          ["poly", "bone", l],
+          ["poly", "bone", r],
+          ["circle", "db", l[2][0], l[2][1], 7],
+          ["circle", "db", r[2][0], r[2][1], 7]
+        ];
+      }
+    },
+    hlr: {
+      vb: [30, 12, 280, 210],
+      timeline: [[0.5, 0, 0, "Hang"], [1.2, 0, 1, "Raise"], [0.3, 1, 1, "Top"], [1.8, 1, 0, "Lower slowly"]],
+      frame: function (u) {
+        var Bar = [150, 22], S = [150, 78];
+        var H = add(S, dir(lerp(92, 76, u)), L.torso);
+        var la = lerp(96, -2, u);
+        var K = add(H, dir(la), L.thigh), A = add(K, dir(la), L.shin), T = add(A, dir(la - 80), L.foot);
+        var tt = unit(sub(H, S)), fr = [tt[1], -tt[0]];
+        var abs = [add(add(S, tt, 14), fr, 5.5), add(add(H, tt, -6), fr, 5.5)];
+        var E = lerpP(S, Bar, 0.5);
+        var hd = headOf(S, H);
+        return [
+          ["poly", "eq-thick", [[150, 22], [262, 22], [262, FLOOR]]],
+          ["circle", "eq", Bar[0], Bar[1], 5],
+          ["poly", "muscle-line", abs],
+          ["poly", "bone", [H, K, A, T]],
+          ["poly", "bone", [H, S]],
+          ["poly", "bone", [S, E, Bar]],
+          ["circle", "headc", hd[0], hd[1], L.head]
+        ];
+      }
+    }
+  };
+
+  function fmt(n) { return (Math.round(n * 10) / 10).toString(); }
+  function makeRenderer(svg) {
+    var els = [];
+    return function (shapes) {
+      if (!els.length) {
+        shapes.forEach(function (s) {
+          var tag = s[0] === "poly" ? "polyline" : s[0];
+          var e = document.createElementNS(NS, tag);
+          e.setAttribute("class", s[1]);
+          svg.appendChild(e);
+          els.push(e);
+        });
+      }
+      shapes.forEach(function (s, i) {
+        var e = els[i];
+        if (s[0] === "poly") e.setAttribute("points", s[2].map(function (p) { return fmt(p[0]) + "," + fmt(p[1]); }).join(" "));
+        else if (s[0] === "circle") { e.setAttribute("cx", fmt(s[2])); e.setAttribute("cy", fmt(s[3])); e.setAttribute("r", s[4]); }
+        else if (s[0] === "rect") { e.setAttribute("x", fmt(s[2])); e.setAttribute("y", fmt(s[3])); e.setAttribute("width", s[4]); e.setAttribute("height", s[5]); e.setAttribute("rx", s[6] || 0); }
+        else if (s[0] === "text") { e.setAttribute("x", s[2]); e.setAttribute("y", s[3]); if (e.textContent !== s[4]) e.textContent = s[4]; }
+      });
+    };
+  }
+  function ease(t) { return 0.5 - 0.5 * Math.cos(Math.PI * t); }
+  function poseAt(spec, time) {
+    var total = spec.timeline.reduce(function (a, s) { return a + s[0]; }, 0);
+    var t = time % total;
+    for (var i = 0; i < spec.timeline.length; i++) {
+      var seg = spec.timeline[i];
+      if (t <= seg[0]) return { u: lerp(seg[1], seg[2], ease(t / seg[0])), label: seg[3] };
+      t -= seg[0];
+    }
+    var last = spec.timeline[spec.timeline.length - 1];
+    return { u: last[2], label: last[3] };
+  }
+
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var anims = [];
+  document.querySelectorAll(".figure[data-anim]").forEach(function (fig, idx) {
+    var spec = specs[fig.getAttribute("data-anim")];
+    var svg = fig.querySelector("svg");
+    svg.setAttribute("viewBox", spec.vb.join(" "));
+    var lab = document.createElement("span");
+    lab.className = "phase-label";
+    lab.setAttribute("aria-hidden", "true");
+    fig.appendChild(lab);
+    var a = { spec: spec, render: makeRenderer(svg), time: idx * 0.7 + 1.2, playing: !reduce, visible: true,
+      setLabel: function (s) { if (lab.textContent !== s) lab.textContent = s; } };
+    var btn = document.createElement("button");
+    btn.type = "button";
+    var art = fig.closest(".ex"), nm = art ? art.querySelector("h2").textContent.toLowerCase() : "exercise";
+    function sync() { btn.textContent = a.playing ? "Pause" : "Play"; btn.setAttribute("aria-label", (a.playing ? "Pause " : "Play ") + nm + " animation"); }
+    btn.addEventListener("click", function () { a.playing = !a.playing; sync(); });
+    sync();
+    fig.appendChild(btn);
+    var p = poseAt(spec, a.time);
+    a.render(spec.frame(p.u)); a.setLabel(p.label);
+    anims.push(a);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) { entries.forEach(function (en) { a.visible = en.isIntersecting; }); }).observe(fig);
+    }
+  });
+
+  var last = null;
+  function tick(now) {
+    var dt = last === null ? 0 : Math.min(0.1, (now - last) / 1000);
+    last = now;
+    anims.forEach(function (a) {
+      if (!a.playing || !a.visible) return;
+      a.time += dt;
+      var p = poseAt(a.spec, a.time);
+      a.render(a.spec.frame(p.u)); a.setLabel(p.label);
+    });
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+
+<script>
+(function () {
+  var tabs = [].slice.call(document.querySelectorAll(".switch button"));
+  var views = [].slice.call(document.querySelectorAll(".view"));
+  var bar = document.querySelector(".switch-bar");
+  var KEY = "lup-view";
+  function store(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  function stored() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+  function viewOf(id) {
+    if (!id) return null;
+    if (id === "lower" || /^l\d/.test(id)) return "lower";
+    if (id === "upper" || /^u\d/.test(id)) return "upper";
+    if (["guide", "start", "basics", "warmup", "progress", "problems", "why"].indexOf(id) >= 0) return "guide";
+    return null;
+  }
+  function current() { var t = tabs.filter(function (b) { return b.getAttribute("aria-selected") === "true"; })[0]; return t && t.dataset.view; }
+  function show(v) {
+    views.forEach(function (el) { el.hidden = el.dataset.view !== v; });
+    tabs.forEach(function (b) { b.setAttribute("aria-selected", b.dataset.view === v ? "true" : "false"); b.tabIndex = b.dataset.view === v ? 0 : -1; });
+    store(v);
+  }
+  function scrollToViews() {
+    var y = bar.offsetTop;
+    if (window.scrollY > y) window.scrollTo(0, y);
+  }
+  function goTo(id) {
+    var v = viewOf(id);
+    if (!v) return false;
+    show(v);
+    var el = document.getElementById(id);
+    if (el && el.tagName === "DETAILS") el.open = true;
+    if (el && id !== v) el.scrollIntoView(); else scrollToViews();
+    return true;
+  }
+  tabs.forEach(function (b, i) {
+    b.addEventListener("click", function () {
+      var v = b.dataset.view;
+      if (current() !== v) show(v);
+      scrollToViews();
+    });
+    b.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      var n = tabs[(i + d + tabs.length) % tabs.length];
+      show(n.dataset.view); n.focus(); e.preventDefault();
+    });
+  });
+  document.addEventListener("click", function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    var id = a.getAttribute("href").slice(1);
+    if (viewOf(id) && viewOf(id) !== current()) { e.preventDefault(); goTo(id); }
+  });
+  window.addEventListener("hashchange", function () { goTo(location.hash.slice(1)); });
+  var h = location.hash.slice(1);
+  if (!(h && goTo(h))) {
+    var s = stored();
+    show(viewOf(s) === s ? s : "guide");
+  }
+})();
+</script>
+
+</body>
+</html>
